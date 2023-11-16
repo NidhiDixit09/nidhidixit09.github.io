@@ -11,15 +11,16 @@
 
     <script>
         
-
         function register() {
             navigator.registerProtocolHandler(
                 "web+uwptestapp",
-                "https://nidhidixit09.github.io/loadApp.html",
+                "https://nidhidixit09.github.io/loadApp.html?uri=%s",
                 "UWPTestApp",
             );
-        }
 
+            
+        }
+        
     </script>
     <button onclick="register()">   Register   </button>
 

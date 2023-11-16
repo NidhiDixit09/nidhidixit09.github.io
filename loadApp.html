@@ -7,6 +7,7 @@
 </head>
 <body onload="javascript:loadUWPApp()">
         <script>
+            document.addEventListener('DOMContentLoaded', loadUWPApp);
             function loadUWPApp() {
                 console.log("loadUWPApp function called.");
                 var win_app = new ActiveXObject("WScript.shell");
