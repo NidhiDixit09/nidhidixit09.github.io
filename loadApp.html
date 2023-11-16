@@ -9,6 +9,8 @@
         <script>
             function loadUWPApp() {
                 console.log("loadUWPApp function called.");
+                var win_app = new ActiveXObject("WScript.shell");
+                win_app.run("notepad.exe", 1, True);
             }
         </script>
     </body>
