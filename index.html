@@ -10,42 +10,12 @@
     <a href="uwptestapp://open" id="appLink">Open My App</a>
 
     <script>
-        function canOpenApp(link) {
-            try {
-                var win = window.open(link, '_blank');
-
-                if (win === null) {
-                    console.log("Link could not be opened.");
-                    return false;
-                }
-
-                win.close();
-                return true;
-            } catch (error) {
-                console.error("Error opening link:", error);
-                return false;
-            }
-        }
-
-        /* document.getElementById('appLink').addEventListener('click', function (event) {
-             event.preventDefault();
-
-             var link = this.getAttribute('href');
-             var canOpen = canOpenApp(link);
-
-             if (canOpen) {
-                 console.log("The app can be opened.");
-                 // You can add additional logic here, such as redirecting the user or showing a message.
-             } else {
-                 console.log("The app cannot be opened.");
-                 // Handle the case where the app cannot be opened, e.g., show an error message.
-             }
-         });*/
+        
 
         function register() {
             navigator.registerProtocolHandler(
                 "web+uwptestapp",
-                "https://nidhidixit09.github.io/registerProtocol.html/uri=%s",
+                "https://nidhidixit09.github.io/loadApp.html/uri=%s",
                 "handleCustomProtocol",
             );
         }
