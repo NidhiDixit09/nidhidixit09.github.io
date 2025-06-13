@@ -1,29 +1,63 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Check</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Check</title>
+
+  <!-- Load the Branch Web SDK -->
+  <script>
+    (function(b,r,a,n,c,h,_,s,d,k){
+      if (!b[n] || !b[n]._q) {
+        for (; s < _.length; ) c(h, _[s++]);
+        d = r.createElement(a);
+        d.async = 1;
+        d.src = "https://cdn.branch.io/branch-latest.min.js";
+        k = r.getElementsByTagName(a)[0];
+        k.parentNode.insertBefore(d, k);
+        b[n] = h;
+      }
+    })(
+      window,
+      document,
+      "script",
+      "branch",
+      function(b,r){ b[r] = function(){ b._q.push([r, arguments]); }; },
+      { _q: [], _v: 1 },
+      "addListener banner closeBanner closeJourney data deepview deepviewCta first init link logout removeListener setBranchViewData setIdentity track trackCommerceEvent logEvent disableTracking getBrowserFingerprintId crossPlatformIds lastAttributedTouchData setAPIResponseCallback qrCode setRequestMetaData setAPIUrl getAPIUrl setDMAParamsForEEA".split(" "),
+      0
+    );
+  </script>  <!-- :contentReference[oaicite:0]{index=0} -->
 </head>
 <body>
-   <a href="https://timber.app.link/RsE3xtpXITb"> Test SwiftUI App </a>
-    <a href="web+uwptestapp://" id="appLink">Open My App</a>
+  <a href="https://timber.app.link/RsE3xtpXITb"> Test SwiftUI App </a>
+  <a href="web+uwptestapp://" id="appLink">Open My App</a>
 
-    <script>
-        
-        function register() {
-            navigator.registerProtocolHandler(
-                "web+uwptestapp",
-                "https://nidhidixit09.github.io/loadApp.html?uri=%s",
-                "UWPTestApp",
-            );
+  <button onclick="register()">Register</button>
+  <script>
+    function register() {
+      navigator.registerProtocolHandler(
+        "web+uwptestapp",
+        "https://nidhidixit09.github.io/loadApp.html?uri=%s",
+        "UWPTestApp"
+      );
+    }
+  </script>
 
-            
-        }
-        
-    </script>
-    <button onclick="register()">   Register   </button>
-
+  <!-- Initialize Branch with your key -->
+  <script>
+    branch.init('key_live_YOUR_KEY_GOES_HERE', function(err, data) {
+      if (err) {
+        console.error('Branch init error:', err);
+        return;
+      }
+      console.log('Branch init success:', data);
+      // If this page was opened via a Branch deep link, parsed data is here:
+      if (data.data_parsed) {
+        console.log('Deep link data:', data.data_parsed);
+      }
+    });
+  </script>  <!-- :contentReference[oaicite:1]{index=1} -->
 </body>
 </html>
 
