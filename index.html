@@ -13,8 +13,9 @@
             readonly
             placeholder="Branch status will appear here…"></textarea>
 
-  <!-- Paragraph to show browser name & version -->
+  <!-- Paragraphs to show browser info and full UA -->
   <p id="browserInfo" style="font-family:monospace; margin:8px 0;"></p>
+  <p id="uaString" style="font-family:monospace; margin:8px 0;"></p>
 
   <p>
     <a href="https://timber.app.link/RsE3xtpXITb">Test SwiftUI App</a> |
@@ -42,14 +43,11 @@
         d = r.createElement(a);
         d.async = 1;
         d.src = "https://cdn.branch.io/branch-latest.min.js";
-
-        // If the script fails to load (e.g. blocked), show an error
         d.onerror = function(evt) {
-          var out = document.getElementById('branchOutput');
-          out.value = '❌ Failed to load Branch SDK script:\n' +
-                      (evt && evt.message ? evt.message : '(no message)');
+          document.getElementById('branchOutput').value =
+            '❌ Failed to load Branch SDK script:\n' +
+            (evt && evt.message ? evt.message : '(no message)');
         };
-
         k = r.getElementsByTagName(a)[0];
         k.parentNode.insertBefore(d, k);
         b[n] = h;
@@ -66,35 +64,46 @@
     );
   </script>
 
-  <!-- Browser detection & Branch init -->
+  <!-- Improved browser detection, UA display & Branch init -->
   <script>
-    // Parse common browser names & versions from userAgent
     function getBrowserNameAndVersion() {
-      var ua = navigator.userAgent, tem,
-          M = ua.match(/(opera|opr|edg|edge|chrome|safari|firefox)\/?\s*(\d+(\.\d+)*)/i) || [];
-      if (/trident/i.test(ua)) {
-        tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
-        return { name: 'IE', version: (tem[1] || '') };
+      const ua = navigator.userAgent;
+      let name = 'Unknown', version = 'Unknown';
+
+      if (/OPR\/|Opera\//.test(ua)) {
+        name = 'Opera';
+        version = (ua.match(/OPR\/([\d\.]+)/) || ua.match(/Opera\/([\d\.]+)/))[1];
       }
-      if (M[1]) {
-        var name = M[1].toLowerCase();
-        if (name === 'edg' || name === 'edge') name = 'Edge';
-        else if (name === 'opr') name = 'Opera';
-        else name = name.charAt(0).toUpperCase() + name.slice(1);
-        return { name: name, version: M[2] };
+      else if (/Edg\//.test(ua)) {
+        name = 'Edge';
+        version = ua.match(/Edg[e]?\/([\d\.]+)/)[1];
       }
-      // Fallback
-      return { name: navigator.appName, version: navigator.appVersion };
+      else if (/Chrome\/|CriOS\//.test(ua)) {
+        name = ua.includes('CriOS') ? 'Chrome iOS' : 'Chrome';
+        version = ua.match(/(?:Chrome|CriOS)\/([\d\.]+)/)[1];
+      }
+      else if (/Firefox\/|FxiOS\//.test(ua)) {
+        name = ua.includes('FxiOS') ? 'Firefox iOS' : 'Firefox';
+        version = ua.match(/(?:Firefox|FxiOS)\/([\d\.]+)/)[1];
+      }
+      else if (/Safari\//.test(ua) &&
+               !/Chrome|CriOS|Chromium|Edg|Edge|OPR|Opera|Firefox|FxiOS/.test(ua)) {
+        name = 'Safari';
+        const v = ua.match(/Version\/([\d\.]+)/);
+        version = v ? v[1] : (ua.match(/Safari\/([\d\.]+)/) || [])[1];
+      }
+
+      return { name, version };
     }
 
-    // Write browser info into the page
     function displayBrowserInfo() {
-      var info = getBrowserNameAndVersion();
-      var el = document.getElementById('browserInfo');
-      el.textContent = 'Browser: ' + info.name + ' v' + info.version;
+      const info = getBrowserNameAndVersion();
+      document.getElementById('browserInfo').textContent =
+        `Browser: ${info.name} v${info.version}`;
+      document.getElementById('uaString').textContent =
+        `User Agent: ${navigator.userAgent}`;
     }
 
-    // Wait for DOM + SDK load then initialize Branch
     function tryInitBranch() {
       displayBrowserInfo();
 
@@ -103,13 +112,14 @@
       }
 
       branch.init('key_live_YOUR_KEY_GOES_HERE', function(err, data) {
-        var out = document.getElementById('branchOutput');
+        const out = document.getElementById('branchOutput');
         if (err) {
           out.value = '❌ Branch init error:\n' + JSON.stringify(err, null, 2);
         } else {
-          var text = '✅ Branch init success:\n' + JSON.stringify(data, null, 2);
+          let text = '✅ Branch init success:\n' + JSON.stringify(data, null, 2);
           if (data && data.data_parsed) {
-            text += '\n\nDeep link data:\n' + JSON.stringify(data.data_parsed, null, 2);
+            text += '\n\nDeep link data:\n' +
+                    JSON.stringify(data.data_parsed, null, 2);
           }
           out.value = text;
         }
@@ -121,4 +131,3 @@
 
 </body>
 </html>
-
