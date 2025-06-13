@@ -2,10 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Link Check</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Branch WebSDK Test</title>
+</head>
+<body>
 
-  <!-- Load the Branch Web SDK -->
+  <!-- Textarea to show SDK load/init status -->
+  <textarea id="branchOutput"
+            style="width:100%; height:120px; font-family:monospace;"
+            readonly
+            placeholder="Branch status will appear here…"></textarea>
+
+  <p>
+    <a href="https://timber.app.link/RsE3xtpXITb">Test SwiftUI App</a> |
+    <a href="web+uwptestapp://" id="appLink">Open My App</a> |
+    <a href="example.html">Load Example Page</a>
+  </p>
+
+  <button onclick="register()">Register Protocol Handler</button>
+
+  <script>
+    function register() {
+      navigator.registerProtocolHandler(
+        "web+uwptestapp",
+        "https://nidhidixit09.github.io/loadApp.html?uri=%s",
+        "UWPTestApp"
+      );
+    }
+  </script>
+
+  <!-- Branch Web SDK loader with onerror handler -->
   <script>
     (function(b,r,a,n,c,h,_,s,d,k){
       if (!b[n] || !b[n]._q) {
@@ -13,6 +39,14 @@
         d = r.createElement(a);
         d.async = 1;
         d.src = "https://cdn.branch.io/branch-latest.min.js";
+
+        // If the script fails to load (e.g. blocked), show an error
+        d.onerror = function(evt) {
+          var out = document.getElementById('branchOutput');
+          out.value = '❌ Failed to load Branch SDK script:\n' +
+                      (evt && evt.message ? evt.message : '(no message)');
+        };
+
         k = r.getElementsByTagName(a)[0];
         k.parentNode.insertBefore(d, k);
         b[n] = h;
@@ -28,51 +62,34 @@
       0
     );
   </script>
-</head>
-<body>
-  <h1>Branch Web SDK Test</h1>
 
-  <div>
-    <a href="https://timber.app.link/RsE3xtpXITb">Test SwiftUI App</a><br>
-    <a href="web+uwptestapp://" id="appLink">Open My App</a>
-  </div>
-
-  <button onclick="register()">Register Protocol</button>
-
+  <!-- Initialize Branch and print result or error -->
   <script>
-    function register() {
-      navigator.registerProtocolHandler(
-        "web+uwptestapp",
-        "https://nidhidixit09.github.io/loadApp.html?uri=%s",
-        "UWPTestApp"
-      );
+    // Give the SDK a moment to load
+    function tryInitBranch() {
+      if (!window.branch || !branch.init) {
+        // SDK not yet ready—retry shortly
+        return setTimeout(tryInitBranch, 50);
+      }
+
+      branch.init('key_live_YOUR_KEY_GOES_HERE', function(err, data) {
+        var out = document.getElementById('branchOutput');
+        if (err) {
+          out.value = '❌ Branch init error:\n' + JSON.stringify(err, null, 2);
+        } else {
+          var text = '✅ Branch init success:\n' + JSON.stringify(data, null, 2);
+          if (data && data.data_parsed) {
+            text += '\n\nDeep link data:\n' + JSON.stringify(data.data_parsed, null, 2);
+          }
+          out.value = text;
+        }
+      });
     }
+
+    // Kick off init after load
+    tryInitBranch();
   </script>
 
-  <!-- Output box for Branch init result -->
-  <div>
-    <h2>Branch Init Result:</h2>
-    <textarea id="output" rows="10" cols="80" readonly style="width:100%; box-sizing:border-box;"></textarea>
-  </div>
-
-  <!-- Initialize Branch with your key and display result -->
-  <script>
-    branch.init('key_live_YOUR_KEY_GOES_HERE', function(err, data) {
-      var outputEl = document.getElementById('output');
-      if (err) {
-        console.error('Branch init error:', err);
-        outputEl.value = 'Error: ' + err;
-        return;
-      }
-      console.log('Branch init success:', data);
-      outputEl.value = JSON.stringify(data, null, 2);
-
-      // If deep link data is present, append it
-      if (data.data_parsed) {
-        outputEl.value += '\n\nDeep link data:\n' + JSON.stringify(data.data_parsed, null, 2);
-      }
-    });
-  </script>
 </body>
 </html>
 
