@@ -27,13 +27,18 @@
       "addListener banner closeBanner closeJourney data deepview deepviewCta first init link logout removeListener setBranchViewData setIdentity track trackCommerceEvent logEvent disableTracking getBrowserFingerprintId crossPlatformIds lastAttributedTouchData setAPIResponseCallback qrCode setRequestMetaData setAPIUrl getAPIUrl setDMAParamsForEEA".split(" "),
       0
     );
-  </script>  <!-- :contentReference[oaicite:0]{index=0} -->
+  </script>
 </head>
 <body>
-  <a href="https://timber.app.link/RsE3xtpXITb"> Test SwiftUI App </a>
-  <a href="web+uwptestapp://" id="appLink">Open My App</a>
+  <h1>Branch Web SDK Test</h1>
 
-  <button onclick="register()">Register</button>
+  <div>
+    <a href="https://timber.app.link/RsE3xtpXITb">Test SwiftUI App</a><br>
+    <a href="web+uwptestapp://" id="appLink">Open My App</a>
+  </div>
+
+  <button onclick="register()">Register Protocol</button>
+
   <script>
     function register() {
       navigator.registerProtocolHandler(
@@ -44,20 +49,30 @@
     }
   </script>
 
-  <!-- Initialize Branch with your key -->
+  <!-- Output box for Branch init result -->
+  <div>
+    <h2>Branch Init Result:</h2>
+    <textarea id="output" rows="10" cols="80" readonly style="width:100%; box-sizing:border-box;"></textarea>
+  </div>
+
+  <!-- Initialize Branch with your key and display result -->
   <script>
-    branch.init('key_live_gAbR03mCEte9DLh6L9GFApebvyg4mMDw', function(err, data) {
+    branch.init('key_live_YOUR_KEY_GOES_HERE', function(err, data) {
+      var outputEl = document.getElementById('output');
       if (err) {
         console.error('Branch init error:', err);
+        outputEl.value = 'Error: ' + err;
         return;
       }
       console.log('Branch init success:', data);
-      // If this page was opened via a Branch deep link, parsed data is here:
+      outputEl.value = JSON.stringify(data, null, 2);
+
+      // If deep link data is present, append it
       if (data.data_parsed) {
-        console.log('Deep link data:', data.data_parsed);
+        outputEl.value += '\n\nDeep link data:\n' + JSON.stringify(data.data_parsed, null, 2);
       }
     });
-  </script>  <!-- :contentReference[oaicite:1]{index=1} -->
+  </script>
 </body>
 </html>
 
