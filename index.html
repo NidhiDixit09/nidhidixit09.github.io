@@ -8,18 +8,32 @@
 <body>
 
   <!-- Textarea to show SDK load/init status -->
-  <textarea id="branchOutput"
-            style="width:100%; height:120px; font-family:monospace;"
-            readonly
-            placeholder="Branch status will appear here…"></textarea>
+  <textarea
+    id="branchOutput"
+    style="
+      width:100%;
+      height:120px;
+      font-family: monospace;
+      /* ensure text is selectable on iOS */
+      user-select: text;
+      -webkit-user-select: text;
+    "
+    readonly
+    onclick="this.select()"
+    onfocus="this.select()"
+    placeholder="Branch status will appear here…">
+  </textarea>
 
-  <!-- Paragraphs to show browser info and full UA -->
-  <p id="browserInfo" style="font-family:monospace; margin:8px 0;"></p>
-  <p id="uaString" style="font-family:monospace; margin:8px 0;"></p>
+  <!-- Copy button for easy clipboard access on iOS -->
+  <div style="margin:8px 0;">
+    <button id="copyBtn">Copy Output</button>
+  </div>
+
+  <!-- Browser info and links -->
+  <p id="browserInfo" style="font-family:monospace; margin:4px 0;"></p>
+  <p id="uaString" style="font-family:monospace; margin:4px 0;"></p>
 
   <p>
-    <a href="https://timber.app.link/RsE3xtpXITb">Test SwiftUI App</a> |
-    <a href="web+uwptestapp://" id="appLink">Open My App</a> |
     <a href="example.html">Load Example Page</a>
   </p>
 
@@ -70,11 +84,7 @@
       const cache = new Set();
       const str = JSON.stringify(obj, (key, value) => {
         if (value instanceof Error) {
-          return {
-            name: value.name,
-            message: value.message,
-            stack: value.stack
-          };
+          return { name: value.name, message: value.message, stack: value.stack };
         }
         if (typeof value === 'object' && value !== null) {
           if (cache.has(value)) return '[Circular]';
@@ -123,9 +133,11 @@
 
     function tryInitBranch() {
       displayBrowserInfo();
+
       if (!window.branch || !branch.init) {
         return setTimeout(tryInitBranch, 50);
       }
+
       branch.init('key_live_YOUR_KEY_GOES_HERE', function(err, data) {
         const out = document.getElementById('branchOutput');
         if (err) {
@@ -137,6 +149,26 @@
     }
 
     tryInitBranch();
+
+    // Copy button logic
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      const textarea = document.getElementById('branchOutput');
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+
+      // Try Clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value).then(function() {
+          alert('✅ Copied to clipboard!');
+        }).catch(function() {
+          document.execCommand('copy');
+          alert('✅ Copied to clipboard (fallback)!');
+        });
+      } else {
+        document.execCommand('copy');
+        alert('✅ Copied to clipboard!');
+      }
+    });
   </script>
 
 </body>
