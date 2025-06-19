@@ -138,11 +138,12 @@
         return setTimeout(tryInitBranch, 50);
       }
 
-      branch.init('key_live_hcnegAumkH7Kv18M8AOHhfgiohpXq5tB', options: {
+      var options = {
           logLevel: 'verbose',
           timeout: 500,
           retry_delay: 400
-      }, function(err, data) {
+      };
+      branch.init('key_live_hcnegAumkH7Kv18M8AOHhfgiohpXq5tB', options , function(err, data) {
         const out = document.getElementById('branchOutput');
         if (err) {
           out.value = '❌ Branch init error:\n' + safeJson(err);
